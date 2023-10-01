@@ -15,7 +15,9 @@ import {
 export const AddModal = ({ isOpen, toggle, onSave, jenisBarangOptions, newItem, handleInputChange }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
-      <ModalHeader className="bg-primary" toggle={toggle}>Tambah Transaksi</ModalHeader>
+      <ModalHeader className="bg-secondary pt-3 pb-2" style={{textAlign:"center"}} toggle={toggle}>
+          <span style={{ fontSize: "16px"}}>Tambah Transaksi</span>
+        </ModalHeader>
       <ModalBody>
             <Form>
                <FormGroup>
@@ -55,12 +57,15 @@ export const AddModal = ({ isOpen, toggle, onSave, jenisBarangOptions, newItem, 
                 />
               </FormGroup>
         </Form>
+        <hr className="mt-4 mb-0" />
       </ModalBody>
-      <ModalFooter>
-        <Button color='primary' onClick={onSave}>
+      <ModalFooter className='mt-0 pt-0'>
+        <Button color='primary' onClick={onSave}
+          style={{width:"100px",height:"40px",fontSize: "13px", textAlign:"center"}}>
           Simpan
         </Button>{' '}
-        <Button color='secondary' onClick={toggle}>
+        <Button color='secondary' onClick={toggle}
+          style={{width:"100px",height:"40px",fontSize: "13px", textAlign:"center"}}>
           Batal
         </Button>
       </ModalFooter>
@@ -71,7 +76,9 @@ export const AddModal = ({ isOpen, toggle, onSave, jenisBarangOptions, newItem, 
 export const EditModal = ({ isOpen, toggle, onSave, BarangOptions, editedItem, handleInputChange }) => {
     return (
       <Modal isOpen={isOpen} toggle={toggle}>
-        <ModalHeader className="bg-primary" toggle={toggle}>Ubah Transaksi</ModalHeader>
+        <ModalHeader className="bg-secondary pt-3 pb-2" style={{textAlign:"center"}} toggle={toggle}>
+          <span style={{ fontSize: "16px"}}>Ubah Transaksi</span>
+        </ModalHeader>
         <ModalBody>
           <Form>
             <FormGroup>
@@ -111,14 +118,16 @@ export const EditModal = ({ isOpen, toggle, onSave, BarangOptions, editedItem, h
                     onChange={handleInputChange}
                   />
                 </FormGroup>
-          
           </Form>
+          <hr className="mt-4 mb-0" />
         </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={onSave}>
+        <ModalFooter className='mt-0 pt-0'>
+          <Button color="primary" onClick={onSave}
+            style={{width:"100px",height:"40px",fontSize: "13px", textAlign:"center"}}>
             Simpan
           </Button>{' '}
-          <Button color="secondary" onClick={toggle}>
+          <Button color="secondary" onClick={toggle}
+            style={{width:"100px",height:"40px",fontSize: "13px", textAlign:"center"}}>
             Batal
           </Button>
         </ModalFooter>
@@ -136,15 +145,20 @@ export const EditModal = ({ isOpen, toggle, onSave, BarangOptions, editedItem, h
   
     return (
       <Modal isOpen={isOpen} toggle={toggle}>
-        <ModalHeader className="bg-primary" toggle={toggle}>Hapus Transaksi</ModalHeader>
+        <ModalHeader className="bg-secondary pt-3 pb-2" style={{textAlign:"center"}} toggle={toggle}>
+          <span style={{ fontSize: "16px"}}>Hapus Transaksi</span>
+        </ModalHeader>
         <ModalBody>
           Apakah Kamu yakin untuk menghapus "{item?.nama_barang}"?
+          <hr className="mt-4 mb-0" />
         </ModalBody>
-        <ModalFooter>
-          <Button color="danger" onClick={handleDelete}>
+        <ModalFooter className='mt-0 pt-0'>
+          <Button color="danger" onClick={handleDelete}
+            style={{width:"100px",height:"40px",fontSize: "13px", textAlign:"center"}}>
             Hapus
           </Button>{' '}
-          <Button color="secondary" onClick={toggle}>
+          <Button color="secondary" onClick={toggle}
+            style={{width:"100px",height:"40px",fontSize: "13px", textAlign:"center"}}>
             Batal
           </Button>
         </ModalFooter>

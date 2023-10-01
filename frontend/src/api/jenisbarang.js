@@ -3,12 +3,30 @@ import axios from 'axios';
 
 const apiUrl = 'http://localhost:8080';
 
-export const fetchJenisBarang = async (searchQuery, sort, orderDirection) => {
+export const fetchJenisBarang = async (searchQuery, sort, orderDirection,currentPage,perPage) => {
   try {
+    const requestData = {
+      search: {
+        column: ["jenis_barang"],
+        value: searchQuery,
+      },
+      order: {
+        column: sort,
+        dir: orderDirection,
+      },
+    };
     const response = await axios.get(
-      `${apiUrl}/jenisbarang?searchValue=${searchQuery}&searchColumn[0]=id&searchColumn[1]=jenis_barang&orderColumn=${sort}&orderDir=${orderDirection}`
-    );
-    return response?.data?.data;
+      `${apiUrl}/jenisbarang`,{
+      params: {
+        searchValue: searchQuery,
+        searchColumn: ["jenis_barang"],
+        orderColumn: requestData.order.column,
+        orderDir: requestData.order.dir,
+        page: currentPage,
+        perPage: perPage,
+      },
+    });
+    return response?.data;
   } catch (error) {
     console.error('Error fetching data:', error);
     throw error;

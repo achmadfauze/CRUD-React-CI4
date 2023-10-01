@@ -27,6 +27,8 @@ class Barang extends ResourceController
         $searchColumn = $this->request->getGet('searchColumn');
         $orderColumn = $this->request->getGet('orderColumn');
         $orderDir = $this->request->getGet('orderDir');
+        $page = $this->request->getGet('page') ?? 1;
+        $perPage = $this->request->getGet('perPage') ?? 10;
 
         if (!empty($searchValue) && !empty($searchColumn)) {
             $isFirst = true;
@@ -44,10 +46,22 @@ class Barang extends ResourceController
             $model->orderBy($orderColumn, $orderDir);
         }
 
+        $totalRows = $model->countAllResults(false); // Count total rows without the limit
+        $offset = ($page - 1) * $perPage;
+
+        $model->limit($perPage, $offset);
+
         $query = $model->get();
+
         $response = [
             'status' => 200,
             'data' => $query->getResult(),
+            'pagination' => [
+                'total_rows' => $totalRows,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'total_pages' => ceil($totalRows / $perPage),
+            ],
             'error' => [],
             'message' => ''
         ];

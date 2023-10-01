@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const baseUrl = 'http://localhost:8080';
 
-export const fetchTransaksi = async (searchQuery, sort, orderDirection) => {
+export const fetchTransaksi = async (searchQuery, sort, orderDirection,currentPage,perPage) => {
   try {
     const requestData = {
       search: {
@@ -17,10 +17,18 @@ export const fetchTransaksi = async (searchQuery, sort, orderDirection) => {
     };
 
     const response = await axios.get(
-      `${baseUrl}/transaksi?searchValue=${searchQuery}&searchColumn[0]=nama_barang&searchColumn[1]=tanggal_transaksi&orderColumn=${requestData.order.column}&orderDir=${requestData.order.dir}`
-    );
+    `${baseUrl}/transaksi`,{
+      params: {
+        searchValue: searchQuery,
+        searchColumn: ["nama_barang", "tanggal_transaksi"],
+        orderColumn: requestData.order.column,
+        orderDir: requestData.order.dir,
+        page: currentPage,
+        perPage: perPage,
+      },
+    });
 
-    return response?.data?.data;
+    return response?.data;
   } catch (error) {
     console.error('Error fetching data:', error);
     return [];

@@ -25,6 +25,8 @@ class Transaksi extends ResourceController
 
         $searchValue = $this->request->getGet('searchValue'); // Get search value from query parameter
         $searchColumn = $this->request->getGet('searchColumn'); // Get search column from query parameter
+        $page = $this->request->getGet('page') ?? 1;
+        $perPage = $this->request->getGet('perPage') ?? 10;
 
         if (!empty($searchValue) && !empty($searchColumn)) {
             $isFirst = true;
@@ -45,10 +47,22 @@ class Transaksi extends ResourceController
             $model->orderBy($orderColumn, $orderDir);
         }
 
+        $totalRows = $model->countAllResults(false); // Count total rows without the limit
+        $offset = ($page - 1) * $perPage;
+
+        $model->limit($perPage, $offset);
+
         $query = $model->get();
+
         $response = [
             'status' => 200,
             'data' => $query->getResult(),
+            'pagination' => [
+                'total_rows' => $totalRows,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'total_pages' => ceil($totalRows / $perPage),
+            ],
             'error' => [],
             'message' => ''
         ];

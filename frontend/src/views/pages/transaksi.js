@@ -29,6 +29,7 @@ import {
   FontAwesomeIcon
 } from '@fortawesome/react-fontawesome';
 import { faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import Pagination from 'components/pagination/pagination';
 
 
 const Transaksi = () => {
@@ -47,10 +48,13 @@ const Transaksi = () => {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
   useEffect(() => {
     fetchData();
-  }, [searchQuery, orderDirection, sort]);
+  }, [searchQuery, orderDirection, sort,currentPage,perPage]);
 
   useEffect(() => {
     fetchBarangOptions()
@@ -63,9 +67,10 @@ const Transaksi = () => {
   }, []);
 
   const fetchData = () => {
-    fetchTransaksi(searchQuery, sort, orderDirection)
+    fetchTransaksi(searchQuery, sort, orderDirection,currentPage,perPage)
       .then((data) => {
-        setFilteredData(data);
+        setFilteredData(data.data);
+        setTotalPages(data.pagination.total_pages);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -166,6 +171,15 @@ const Transaksi = () => {
     }
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  const paginations = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",     
+  };
+
   return (
     <>
       <Container className="mt-4" fluid>
@@ -180,7 +194,7 @@ const Transaksi = () => {
                   <Col className="text-right" xs="4">
                     <Button
                       color="primary"
-                      href="#pablo"
+                      style={{width:"80px",height:"30px",fontSize: "12px", textAlign:"center"}}
                       onClick={handleAddNew}
                       size="sm"
                     >
@@ -190,18 +204,48 @@ const Transaksi = () => {
                 </Row>
               </CardHeader>
               <CardBody className="px-0">
-                <div className="px-4 mb-2">
+                <div className="px-4 mb-2 d-flex">
                   <Input
-                    placeholder="Cari .."
-                    value={searchQuery}
-                    onChange={handleSearchInputChange}
-                  />
+                    className='mr-2'
+                    style={{width:"70px",height:"36px",fontSize: "12px"}}
+                    type='select'
+                    onChange={(e) => setPerPage(parseInt(e.target.value))}
+                  >
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                  </Input>
+                    <Input
+                      style={{height:"36px",fontSize: "12px"}}
+                      placeholder="Cari .."
+                      value={searchQuery}
+                      onChange={handleSearchInputChange}
+                    />
                 </div>
                 <Table className="align-items-center table-flush" responsive>
                  <thead className="thead-light">
                      <tr>
                      <th>No</th>
-                     <th className='d-flex gap-2'>Nama Barang 
+                     <th className=''>Tanggal Transaksi 
+                        <Button
+                          size='sm'
+                          className={ `mx-4 ${sort === 'tanggal_transaksi' ? 'bg-transparent' : 'bg-transparent'
+                            } border-0`}
+                          onClick={onTanggalTransaksiClick}
+                        >
+                          
+                          {sort === 'tanggal_transaksi' && orderDirection === 'asc' && (
+                            <FontAwesomeIcon icon={faSortUp} />
+                          )}
+                          {sort === 'tanggal_transaksi' && orderDirection === 'desc' && (
+                            <FontAwesomeIcon icon={faSortDown} />
+                          )}
+                          {sort !== 'tanggal_transaksi' && (
+                            <FontAwesomeIcon icon={faSortUp} />
+                          )}
+                        </Button>
+                      </th>
+                     <th className=''>Nama Barang 
                         <Button
                           size='sm'
                           className={ `mx-4 ${sort === 'nama_barang' ? 'bg-transparent' : 'bg-transparent'
@@ -221,35 +265,16 @@ const Transaksi = () => {
                         </Button>
                       </th>
                      <th>Jumlah Transaksi</th>
-                     <th className='d-flex gap-2'>Tanggal Transaksi 
-                        <Button
-                          size='sm'
-                          className={ `mx-4 ${sort === 'tanggal_transaksi' ? 'bg-transparent' : 'bg-transparent'
-                            } border-0`}
-                          onClick={onTanggalTransaksiClick}
-                        >
-                          
-                          {sort === 'tanggal_transaksi' && orderDirection === 'asc' && (
-                            <FontAwesomeIcon icon={faSortUp} />
-                          )}
-                          {sort === 'tanggal_transaksi' && orderDirection === 'desc' && (
-                            <FontAwesomeIcon icon={faSortDown} />
-                          )}
-                          {sort !== 'tanggal_transaksi' && (
-                            <FontAwesomeIcon icon={faSortUp} />
-                          )}
-                        </Button>
-                      </th>
                    <th>Aksi</th>
                 </tr>
                  </thead>
                <tbody>
                  {filteredData.map((item, index) => (
                 <tr key={index}>
-                    <td>{index + 1}</td>
+                    <td>{(currentPage - 1) * perPage + index + 1}</td>
+                    <td>{item.tanggal_transaksi}</td>
                     <td>{item.nama_barang}</td>
                     <td>{item.jumlah_terjual}</td>
-                    <td>{item.tanggal_transaksi}</td>
                       <td>
                         <Button color="secondary" size="sm" onClick={() => handleEdit(item)}>Ubah</Button>
                         <Button color="danger" size="sm" onClick={() => handleDeleteConfirmation(item)}>Hapus</Button>
@@ -259,6 +284,14 @@ const Transaksi = () => {
                   
                 </tbody>
               </Table>
+              <hr className="mt-3" />
+              <div className='py-0' style={paginations}>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </div>
               </CardBody>
             </Card>
           </Col>

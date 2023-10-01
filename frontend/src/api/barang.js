@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8080'; 
 
-export const fetchBarang = async (searchQuery, sort, orderDirection) => {
+export const fetchBarang = async (searchQuery, sort, orderDirection,currentPage,perPage) => {
   try {
     const requestData = {
       search: {
@@ -21,10 +21,12 @@ export const fetchBarang = async (searchQuery, sort, orderDirection) => {
         searchColumn: ["nama_barang", "jenis_barang"],
         orderColumn: requestData.order.column,
         orderDir: requestData.order.dir,
+        page: currentPage,
+        perPage: perPage,
       },
     });
 
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw error;
   }

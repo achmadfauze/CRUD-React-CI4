@@ -31,6 +31,7 @@ import {
   editBarang,
   deleteBarang,
 } from '../../api/barang';
+import Pagination from 'components/pagination/pagination';
 
 const Barang = () => {
   const [editedItem, setEditedItem] = useState(null);
@@ -48,10 +49,13 @@ const Barang = () => {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
   useEffect(() => {
     fetchData();
-  }, [searchQuery, orderDirection, sort]);
+  }, [searchQuery, orderDirection, sort,currentPage,perPage]);
 
   useEffect(() => {
     fetchJenisBarangOptions()
@@ -64,9 +68,10 @@ const Barang = () => {
   }, []);
 
   const fetchData = () => {
-    fetchBarang(searchQuery, sort, orderDirection)
+    fetchBarang(searchQuery, sort, orderDirection,currentPage,perPage)
       .then((data) => {
-        setFilteredData(data);
+        setFilteredData(data.data);
+        setTotalPages(data.pagination.total_pages);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -166,6 +171,14 @@ const Barang = () => {
         });
     }
   };
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  const paginations = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",     
+  };
 
   return (
     <>
@@ -181,7 +194,7 @@ const Barang = () => {
                   <Col className="text-right" xs="4">
                     <Button
                       color="primary"
-                      href="#pablo"
+                      style={{width:"80px",height:"30px",fontSize: "12px", textAlign:"center"}}
                       onClick={handleAddNew}
                       size="sm"
                     >
@@ -191,18 +204,29 @@ const Barang = () => {
                 </Row>
               </CardHeader>
               <CardBody className="px-0">
-                <div className="px-4 mb-2">
+                <div className="px-4 mb-2 d-flex">
                   <Input
-                    placeholder="Cari .."
-                    value={searchQuery}
-                    onChange={handleSearchInputChange}
-                  />
+                    className='mr-2'
+                    style={{width:"70px",height:"36px",fontSize: "12px"}}
+                    type='select'
+                    onChange={(e) => setPerPage(parseInt(e.target.value))}
+                  >
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                  </Input>
+                    <Input
+                      style={{height:"36px",fontSize: "12px"}}
+                      placeholder="Cari .."
+                      value={searchQuery}
+                      onChange={handleSearchInputChange}
+                    />
                 </div>
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
                       <th scope="col">No</th>
-                      <th className='d-flex gap-2'>Nama Barang 
+                      <th >Nama Barang 
                         <Button
                           size='sm'
                           className={ `mx-4 ${sort === 'nama_barang' ? 'bg-transparent' : 'bg-transparent'
@@ -222,7 +246,7 @@ const Barang = () => {
                         </Button>
                       </th>
                       <th scope="col">Stok</th>
-                      <th className='d-flex gap-2'>Nama Barang 
+                      <th >Jenis Barang 
                         <Button
                           size='sm'
                           className={ `mx-4 ${sort === 'jenis_barang' ? 'bg-transparent' : 'bg-transparent'
@@ -247,7 +271,7 @@ const Barang = () => {
                   <tbody>
                     {filteredData.map((item, index) => (
                       <tr key={index}>
-                        <td>{index + 1}</td>
+                        <td>{(currentPage - 1) * perPage + index + 1}</td>
                         <td>{item.nama_barang}</td>
                         <td>{item.stock}</td>
                         <td>{item.jenis_barang}</td>
@@ -271,6 +295,14 @@ const Barang = () => {
                     ))}
                   </tbody>
                 </Table>
+                <hr className="mt-3" />
+                <div className='py-0' style={paginations}>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
               </CardBody>
             </Card>
           </Col>

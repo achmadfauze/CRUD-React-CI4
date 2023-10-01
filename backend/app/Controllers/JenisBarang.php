@@ -16,6 +16,55 @@ class JenisBarang extends ResourceController
      */
     use ResponseTrait;
 
+    // public function index($id = null)
+    // {
+    //     // $pager = \Config\Services::pager();
+    //     $model = new JenisBarangModel();
+
+    //     // Get query parameters from the URL
+    //     $searchValue = $this->request->getGet('searchValue');
+    //     $searchColumn = $this->request->getGet('searchColumn');
+    //     $orderColumn = $this->request->getGet('orderColumn');
+    //     $orderDir = $this->request->getGet('orderDir');
+
+    //     if (!empty($searchValue) && !empty($searchColumn)) {
+    //         $isFirst = true;
+    //         foreach ($searchColumn as $k => $v) {
+    //             if ($isFirst) {
+    //                 $model->like($v, $searchValue);
+    //                 $isFirst = false;
+    //             } else {
+    //                 $model->orLike($v, $searchValue);
+    //             }
+    //         }
+    //     }
+
+    //     if (!empty($orderColumn) && !empty($orderDir)) {
+    //         $model->orderBy($orderColumn, $orderDir);
+    //     }
+
+    //     $page = $this->request->getGet('page') ?? 1;
+    //     $perPage = $this->request->getGet('perPage') ?? 10;
+    //     // Define the number of items per page
+    //     $totalRows = $model->countAllResults(false); // Count total rows without the limit
+    //     $model->limit($perPage, ($page - 1) * $perPage);
+
+    //     $query = $model->get();
+
+    //     $response = [
+    //         'status' => 200,
+    //         'data' => $query->getResult(),
+    //         'pagination' => [
+    //             'total_rows' => $totalRows,
+    //             'per_page' => $perPage,
+    //             'current_page' => $page,
+    //             'total_pages' => ceil($totalRows / $perPage),
+    //         ],
+    //         'error' => [],
+    //         'message' => ''
+    //     ];
+    //     return $this->respond($response);
+    // }
     public function index($id = null)
     {
         $model = new JenisBarangModel();
@@ -25,6 +74,8 @@ class JenisBarang extends ResourceController
         $searchColumn = $this->request->getGet('searchColumn');
         $orderColumn = $this->request->getGet('orderColumn');
         $orderDir = $this->request->getGet('orderDir');
+        $page = $this->request->getGet('page') ?? 1;
+        $perPage = $this->request->getGet('perPage') ?? 10; // Default to 10 items per page
 
         if (!empty($searchValue) && !empty($searchColumn)) {
             $isFirst = true;
@@ -42,15 +93,29 @@ class JenisBarang extends ResourceController
             $model->orderBy($orderColumn, $orderDir);
         }
 
+        // Define the number of items per page and calculate the offset
+        $totalRows = $model->countAllResults(false); // Count total rows without the limit
+        $offset = ($page - 1) * $perPage;
+
+        $model->limit($perPage, $offset);
+
         $query = $model->get();
+
         $response = [
             'status' => 200,
             'data' => $query->getResult(),
+            'pagination' => [
+                'total_rows' => $totalRows,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'total_pages' => ceil($totalRows / $perPage),
+            ],
             'error' => [],
             'message' => ''
         ];
         return $this->respond($response);
     }
+
 
 
     /**
